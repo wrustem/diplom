@@ -13,10 +13,13 @@
 		CE74CC592A33900000404BC4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE74CC572A33900000404BC4 /* Main.storyboard */; };
 		CE74CC612A33A36900404BC4 /* Element.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE74CC602A33A36900404BC4 /* Element.swift */; };
 		CE74CC672A33BA6800404BC4 /* VCMader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE74CC662A33BA6800404BC4 /* VCMader.swift */; };
-		CE74CC6F2A33BF8200404BC4 /* UIImage+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE74CC6E2A33BF8200404BC4 /* UIImage+extensions.swift */; };
 		CE7D6CE02A3D769D00DDE93D /* FileMader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D6CDF2A3D769D00DDE93D /* FileMader.swift */; };
 		CE7D6CE22A3D780E00DDE93D /* AppDelegateMader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D6CE12A3D780E00DDE93D /* AppDelegateMader.swift */; };
 		CE7D6CE42A3D7A8100DDE93D /* TapToolBig1.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = CE7D6CE32A3D7A8100DDE93D /* TapToolBig1.mlmodel */; };
+		CED345AA2A43683200B4CB81 /* GenerateVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED345A92A43683200B4CB81 /* GenerateVC.swift */; };
+		CED345AC2A43683600B4CB81 /* SelectDeviceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED345AB2A43683600B4CB81 /* SelectDeviceVC.swift */; };
+		CED345B02A43684600B4CB81 /* UIImage+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED345AF2A43684600B4CB81 /* UIImage+extensions.swift */; };
+		CED345B22A436DE600B4CB81 /* UIClassification.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = CED345B12A436DE500B4CB81 /* UIClassification.mlmodel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,10 +31,13 @@
 		CE74CC5A2A33900000404BC4 /* MacApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacApp.entitlements; sourceTree = "<group>"; };
 		CE74CC602A33A36900404BC4 /* Element.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Element.swift; sourceTree = "<group>"; };
 		CE74CC662A33BA6800404BC4 /* VCMader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VCMader.swift; sourceTree = "<group>"; };
-		CE74CC6E2A33BF8200404BC4 /* UIImage+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+extensions.swift"; sourceTree = "<group>"; };
 		CE7D6CDF2A3D769D00DDE93D /* FileMader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMader.swift; sourceTree = "<group>"; };
 		CE7D6CE12A3D780E00DDE93D /* AppDelegateMader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegateMader.swift; sourceTree = "<group>"; };
 		CE7D6CE32A3D7A8100DDE93D /* TapToolBig1.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = TapToolBig1.mlmodel; sourceTree = "<group>"; };
+		CED345A92A43683200B4CB81 /* GenerateVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenerateVC.swift; sourceTree = "<group>"; };
+		CED345AB2A43683600B4CB81 /* SelectDeviceVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectDeviceVC.swift; sourceTree = "<group>"; };
+		CED345AF2A43684600B4CB81 /* UIImage+extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIImage+extensions.swift"; path = "../../../../projects/diplom/MacApp/MacApp/UIImage+extensions.swift"; sourceTree = "<group>"; };
+		CED345B12A436DE500B4CB81 /* UIClassification.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = UIClassification.mlmodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,8 +79,11 @@
 				CE74CC602A33A36900404BC4 /* Element.swift */,
 				CE74CC662A33BA6800404BC4 /* VCMader.swift */,
 				CE7D6CDF2A3D769D00DDE93D /* FileMader.swift */,
-				CE74CC6E2A33BF8200404BC4 /* UIImage+extensions.swift */,
+				CED345AF2A43684600B4CB81 /* UIImage+extensions.swift */,
 				CE7D6CE12A3D780E00DDE93D /* AppDelegateMader.swift */,
+				CED345A92A43683200B4CB81 /* GenerateVC.swift */,
+				CED345AB2A43683600B4CB81 /* SelectDeviceVC.swift */,
+				CED345B12A436DE500B4CB81 /* UIClassification.mlmodel */,
 			);
 			path = MacApp;
 			sourceTree = "<group>";
@@ -155,8 +164,11 @@
 				CE74CC522A338FFF00404BC4 /* AppDelegate.swift in Sources */,
 				CE74CC612A33A36900404BC4 /* Element.swift in Sources */,
 				CE74CC672A33BA6800404BC4 /* VCMader.swift in Sources */,
+				CED345AC2A43683600B4CB81 /* SelectDeviceVC.swift in Sources */,
+				CED345AA2A43683200B4CB81 /* GenerateVC.swift in Sources */,
 				CE7D6CE22A3D780E00DDE93D /* AppDelegateMader.swift in Sources */,
-				CE74CC6F2A33BF8200404BC4 /* UIImage+extensions.swift in Sources */,
+				CED345B22A436DE600B4CB81 /* UIClassification.mlmodel in Sources */,
+				CED345B02A43684600B4CB81 /* UIImage+extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

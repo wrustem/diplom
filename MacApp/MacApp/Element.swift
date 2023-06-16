@@ -13,17 +13,27 @@ import AVFoundation
 import Vision
 import Foundation
 
+enum UIIDStr {
+    static func randomString(length: Int) -> String {
+      let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+      return String((0..<length).map{ _ in letters.randomElement()! })
+    }
+}
+
 class Element: NSObject {
-    let id = UUID().uuidString
+    let id = UIIDStr.randomString(length: 5)
     var contour: VNContour?
     var box: CGRect
     var children: [Element] = []
     var elementType: ElementType = .unknown
     var color: NSColor?
+    var image: NSImage?
     
     init(box: CGRect) {
         self.box = box
     }
+    
+
     
     init(contour: VNContour, box: CGRect) {
         self.contour = contour
@@ -163,30 +173,31 @@ class Element: NSObject {
     }
 
     func isEqual(to: Element) -> Bool {
-        var firstBoxes = Set<CGRect>()
-        for e in children {
-            firstBoxes.insert(e.box)
-        }
-        
-        var firstBoxes1 = Set<CGRect>()
-        for e in to.children {
-            firstBoxes1.insert(e.box)
-        }
-        
-        var equalCount = 0
-        
-        for e in to.children {
-            let e1 = e.box
-            if firstBoxes.contains(e1) {
-                equalCount += 1
-            }
-        }
-        
-        if Double(equalCount) / Double(to.children.count) > 0.5 {
-            return true
-        } else {
-            return false
-        }
+        self.children.count == to.children.count
+//        var firstBoxes = Set<CGRect>()
+//        for e in children {
+//            firstBoxes.insert(e.box)
+//        }
+//
+//        var firstBoxes1 = Set<CGRect>()
+//        for e in to.children {
+//            firstBoxes1.insert(e.box)
+//        }
+//
+//        var equalCount = 0
+//
+//        for e in to.children {
+//            let e1 = e.box
+//            if firstBoxes.contains(e1) {
+//                equalCount += 1
+//            }
+//        }
+//
+//        if Double(equalCount) / Double(to.children.count) > 0.5 {
+//            return true
+//        } else {
+//            return false
+//        }
     }
 }
 
@@ -195,7 +206,11 @@ enum ElementType {
     case text(String)
     case navigationBar
     case button(Element)
+    case buttonEmpty
     case image
+    case segmentcontrol
+    case slider
+    case uiswitch
 }
 
 extension CGRect: Hashable {

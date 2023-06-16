@@ -16,33 +16,41 @@ class ViewController: NSViewController {
     
     var counter = 0
     let preferredTimescale = 60
-    let stepTimescale = 10
+    let stepTimescale = 5
     
     var videoURL: URL?
     var sourceImage: NSImage!
     var isRecognizeMode = true
     
     var detectedVC: Element!
+    var newDetectedVC = [Element]()
     var lastDetectedVC: Element?
     
     var boxes = [CGRect]()
     
     let uiObjectClassifier = try! TapToolBig1(configuration: MLModelConfiguration())
     
+    let uiObjectClassifierTRUE = try! UIClassification(configuration: MLModelConfiguration())
+    
     @objc
     private func continueButton2Tapped() {
-        isRecognizeMode = false
-        let a = AppDelegateMader()
-        a.mainElement = detectedVC
-        a.start()
-        
-        let v = VCMader()
-        v.mainElement = detectedVC
-        v.start()
-        
-        task1()
-        task2()
-        task3()
+        let storyboard = NSStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateController(withIdentifier: "secondVC") as! GenerateVC
+        vc.mainElement = detectedVC
+        vc.newEl = newDetectedVC
+        self.presentAsSheet(vc)
+//        isRecognizeMode = false
+//        let a = AppDelegateMader()
+//        a.mainElement = detectedVC
+//        a.start()
+//
+//        let v = VCMader()
+//        v.mainElement = detectedVC
+//        v.start()
+//
+//        task1()
+//        task2()
+//        task3()
     }
 
     @IBAction func testButton(_ sender: Any) {
@@ -50,7 +58,7 @@ class ViewController: NSViewController {
         openPanel.canChooseFiles = true
         openPanel.canChooseDirectories = false
         openPanel.allowsMultipleSelection = false
-        openPanel.allowedFileTypes = ["mp4", "mov"]
+        openPanel.allowedFileTypes = ["mp4", "mov"] // Ограничение в выборе файлов только с расширением .txt
         if openPanel.runModal() == NSApplication.ModalResponse.OK {
             if let url = openPanel.url {
                 print(url.path)
@@ -89,7 +97,8 @@ class ViewController: NSViewController {
     
     @objc func displayLinkCallback() {
         DispatchQueue.global().async {
-            guard let im = self.imageFromVideo(url: self.videoURL!, at: TimeInterval(self.counter * 10)) else {
+            
+            guard let im = self.imageFromVideo(url: self.videoURL!, at: TimeInterval(self.counter * 5)) else {
                 DispatchQueue.main.sync { [self] in
                     self.continueButton2Tapped()
                 }
@@ -108,7 +117,6 @@ class ViewController: NSViewController {
     func detectingAndDraw(sourceImage: NSImage) -> NSImage? {
         // Распознование и проверка, что экраны разные
         guard let element = detectVisionContours(sourceImage: sourceImage),
-              !(lastDetectedVC?.isEqual(to: element) ?? false),
               element.children.count > 0
         else { return nil }
         
@@ -118,11 +126,28 @@ class ViewController: NSViewController {
             element.setTextChain(text: string.0, rect: string.1)
         }
         
+        guard !(lastDetectedVC?.isEqual(to: element) ?? false) else { return nil }
+        
         if detectedVC == nil {
             detectedVC = element
             lastDetectedVC = element
+        } else {
+            newDetectedVC.append(element)
         }
+//
+//        for el in element.children {
+//            if let contour = el.contour, isNavigationBar(contour: contour) {
+//                el.elementType = .navigationBar
+//            }
+//        }
+//
+//        let im = drawContours(element: element, strings: strings, sourceImage: sourceImage)
+//
         detectCircle(sourceImage: sourceImage)
+//        drawCircle()
+//
+//
+//
         if let b = boxes.last {
             DispatchQueue.main.sync {
                 
@@ -140,6 +165,8 @@ class ViewController: NSViewController {
             
             lastDetectedVC = element
         }
+//
+        //        detectedVC.append(element)
         
         return sourceImage
     }
@@ -175,6 +202,9 @@ class ViewController: NSViewController {
               let bitmapImageRep = NSBitmapImageRep(data: imageData),
               let cgImage = bitmapImageRep.cgImage
         else { return nil }
+                
+
+                   
         
         let inputImage = CIImage.init(cgImage: cgImage)
         let contourRequest = VNDetectContoursRequest()
@@ -194,11 +224,19 @@ class ViewController: NSViewController {
         for i in (0...contoursObservation.contourCount-1) {
             let contour = try! contoursObservation.contour(at: i)
             let box = contour.normalizedPath.boundingBox
-            guard box.width * box.height > 0.003 else { continue }
+            guard box.width * box.height > 0.0001 else { continue }
             let el = Element(contour: contour, box: contour.normalizedPath.boundingBox)
+//            el.color = cxg_getPointColor(withImage: sourceImage, point: CGPoint(x: minXBox, y: minYBox))
             
             let revBox = CGRect(x: box.minX, y: 1 - box.maxY, width: box.width, height: box.height)
             DispatchQueue.main.sync {
+//                el.color = getPixelColor(
+//                    at: NSPoint(
+//                        x: revBox.minX + revBox.width / 2,
+//                        y: revBox.minY + revBox.height / 2
+//                    ) ,
+//                    in: sourceImage
+//                )
                 el.color = sourceImage.getPixelColor(
                     atLocation: NSPoint(
                         x: revBox.minX + revBox.width / 2,
@@ -207,12 +245,69 @@ class ViewController: NSViewController {
                     withFrameSize: CGSize(width: 1, height: 1)
                 )
             }
+            
+            let cropeImage = cropImage1x1(imageToCrop: sourceImage, toRect: box)
+            el.image = cropeImage
             topElement.addElementToIerarh(el)
         }
         
-        
-        
         return topElement
+    }
+    
+    func cropImage1x1(imageToCrop:NSImage, toRect rect:CGRect) -> NSImage{
+        
+        let size = imageToCrop.size
+        let r = CGRect(
+            x: size.width * rect.minX,
+            y: size.height * (1 - rect.maxY),
+            width: size.width * rect.width,
+            height: size.height * rect.height
+        )
+        let imageRef = imageToCrop.cropping(to: r)
+        return imageRef
+    }
+    
+    private func setMLType(el: Element) {
+        let group = DispatchGroup()
+        
+        let request = VNCoreMLRequest(model: try! VNCoreMLModel(for: uiObjectClassifierTRUE.model)) { [self] (request, error) in
+            group.enter()
+            
+            guard let results = request.results as? [VNClassificationObservation], let topResult = results.first else {
+                return
+            }
+            
+            switch topResult.identifier {
+            case "Segmentcontrol":
+                el.elementType = .segmentcontrol
+            case "UIButton":
+                el.elementType = .buttonEmpty
+            case "UISlider":
+                el.elementType = .slider
+            case "UISwitch":
+                el.elementType = .uiswitch
+            default:
+                fatalError()
+            }
+            
+            group.leave()
+        }
+        
+        let myImage = el.image!
+        var imageRect = NSRect(x: 0, y: 0, width: myImage.size.width, height: myImage.size.height)
+        guard let cgImage = myImage.cgImage(forProposedRect: &imageRect, context: nil, hints: nil) else {
+            return //Handle error
+        }
+        
+        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        try? handler.perform([request])
+        
+        group.wait()
+    }
+    
+    private func isNavigationBar(contour: VNContour) -> Bool {
+        return contour.normalizedPath.boundingBox.width > 0.8
+        && (1 - contour.normalizedPath.boundingBox.minY) < 0.2
     }
     
     private func detectCircle(sourceImage: NSImage) {
@@ -248,6 +343,8 @@ class ViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+
 
     }
 
@@ -257,82 +354,6 @@ class ViewController: NSViewController {
         }
     }
     @IBOutlet weak var test: NSSwitch!
-    
-
-    func task1() {
-        let task = Process()
-        let pipe = Pipe()
-
-        task.standardOutput = pipe
-        task.standardError = pipe
-        task.arguments = ["-project", "/Users/user/projects/diplom/GeneratedProj/GeneratedProj.xcodeproj", "-scheme", "GeneratedProj", "-configuration", "Debug", "-destination", "platform=iOS,name=iPhone w"]
-        task.launchPath = "/usr/bin/xcodebuild"
-
-
-        task.launch()
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)
-
-        print(output ?? "No output")
-    }
-    
-    func task2() {
-        let task = Process()
-        let pipe = Pipe()
-
-        task.standardOutput = pipe
-        task.standardError = pipe
-        task.arguments = ["install", "ios-deploy"]
-        task.launchPath = "/opt/homebrew/bin/brew"
-
-        task.launch()
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)
-    }
-    
-    func task3() {
-        deployBundleToDevice(bundleName: "GeneratedProj", deviceID: "00008101-000A4DD43CE8001E")
-    }
-    
-    func deployBundleToDevice(bundleName: String, deviceID: String) {
-        guard let appBundleUrl = findAppBundle(bundleName: bundleName) else {
-            print("Unable to locate \(bundleName) in Derived Data")
-            return
-        }
-
-        let arguments = ["--bundle", appBundleUrl.path, "-i", deviceID, "-d"]
-        let task = Process()
-        task.launchPath = "/opt/homebrew/bin/ios-deploy"
-        task.arguments = arguments
-
-        let pipe = Pipe()
-        task.standardOutput = pipe
-        task.standardError = pipe
-
-        task.launch()
-        task.waitUntilExit()
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        if let output = String(data: data, encoding: .utf8) {
-            print(output)
-        }
-    }
-
-    func findAppBundle(bundleName: String) -> URL? {
-        
-        let contentUrl = URL(string: "/Users/user/Library/Developer/Xcode/DerivedData")!
-        let contents = try! FileManager.default.contentsOfDirectory(atPath: contentUrl.path)
-        for content in contents {
-            if content.hasPrefix(bundleName) {
-                let c = contentUrl.appending(path: "\(content)/Build/Products/Debug-iphoneos/\(bundleName).app")
-                return c
-            }
-        }
-        
-        return nil
-    }
 
     
     func getPixelColor(at point: NSPoint, in image: NSImage) -> NSColor? {
@@ -356,5 +377,18 @@ class ViewController: NSViewController {
         let color = NSColor(red: red, green: green, blue: blue, alpha: alpha)
         return color
     }
+
 }
 
+extension NSImage {
+    func cropping(to rect: CGRect) -> NSImage {
+        var imageRect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        guard let imageRef = self.cgImage(forProposedRect: &imageRect, context: nil, hints: nil) else {
+            return NSImage(size: rect.size)
+        }
+        guard let crop = imageRef.cropping(to: rect) else {
+            return NSImage(size: rect.size)
+        }
+        return NSImage(cgImage: crop, size: NSZeroSize)
+    }
+}

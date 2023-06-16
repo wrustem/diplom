@@ -109,19 +109,26 @@ class VCMader {
         """)
         
         result.append("""
-                     override func viewDidLoad() {
+                     
+        override func viewDidLoad() {
                       super.viewDidLoad()
         
                      
         """)
         
         addElChilds(mainElement)
-        
         result.append("""
                   }
                   
+        """)
+        
+        createRouts()
+        
+        result.append("""
+                  
               }
         """)
+        
         
         FileMader().createTextFile(content: result, filePath: "/Users/user/projects/diplom/GeneratedProj/GeneratedProj/ViewController\(mainElement.id).swift")
     }
